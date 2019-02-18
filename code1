@@ -1,0 +1,41 @@
++import pandas as pd
+import lxml as xl
+from bs4 import BeautifulSoup
+import urllib.request
+from http.cookiejar import CookieJar
+import requests
+from slimit.parser import Parser
+from slimit.visitors import nodevisitor
+from slimit import ast
+import jsbeautifier
+
+#This function makes three list. They contain date, place and time for a particular course. 
+def listmaker(dat,place,tim,url):
+    r= requests.get(url)
+    p=jsbeautifier.beautify(r.text)
+    a=p.split('td CLASS = "dddefault" >')
+    count=0
+    for part in a:
+        if "pm" in part:
+            tim.append(part)
+            place.append(a[count+2])
+            dat.append(a[count+3])
+        count=count+1
+#This is here will make url to the webpage of various. All you need to provide is the coursename and course number. 
+def urlmaker(crsname,crsnum):
+    base='https://www.uvic.ca/BAN1P/bwckctlg.p_disp_listcrse?term_in=201905&subj_in='
+    end='&schd_in=%'
+    url=base+crsname+'&crse_in='+crsnum+end
+    return url
+
+    
+def main():
+    a=list()
+    b=list()
+    c=list()
+    url=urlmaker('MATH','101')
+    listmaker(a,b,c,url)
+    print(a)
+
+    
+main()
