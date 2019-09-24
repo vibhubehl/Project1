@@ -137,6 +137,12 @@ def timeclash(combo):
 #     table.commit()
 #     table.close()
 
+#this function returns the starting time in int form
+def timedisection(l):
+    temp=l.split('-')
+    temp1=temp[0].split(':')
+    n=int(temp1[0])
+    return n
 
 def delete():
     table= sqlite3.connect(table.db)
@@ -150,31 +156,28 @@ def ranking(list_of_crn):
     q1_type= input("Are you an morning person? (y/n)")
     q2_frequency= input(" Do you like back to back classes? (y/n)")
     q3_holidays= input("Do u want to try a particular day to be free?  (y/n)")
-    q1_count=0
-    q2_count=0
-    q3_count=0
-    table= sqlite3.connect(ranking.db)
-    cursor=table.cursor()
-    cursor.execute('''CREATE TABLE ranking(Subject TEXT, Time Text, CRN TEXT)''')
-    table.commit()
-    table.close()
+    count=0
+    ranks= [len(list_of_crn)]
+    # table= sqlite3.connect(ranking.db)
+    # cursor=table.cursor()
+    # cursor.execute('''CREATE TABLE ranking(Subject TEXT, Time Text, CRN TEXT)''')
+    # table.commit()
+    # table.close()
     time_start_list=[]
-    item_list=[]  #will store all the items from INFO that is to be transfered to new table
-    crn_list_individual=[]
     conn= sqlite3.connect('database.db')
     curr= conn.cursor()
-    for i in list_of_crn:
-        for j in i:
-            crn_list_individual+=j      #makes a list of crns after timeclash
-    for k in crn_list_individual:
-        curr.execute("SELECT * from INFO where CRN= ?",k)
-        item_list=curr.fetchall()
-    for m in item_list:
-        cursor.execute("INSERT ")
-    cursor.execute("SELECT TIME FROM INFO ")
-    time_start_list=cursor.fetchall()
-    print(time_start_list)
-    #for time in time_start_list:
+    for k in list_of_crn:
+        ranks[count]=0
+        listtemp=k.split(",")
+        for j in listtemp:
+            curr.execute("SELECT TIME from INFO where CRN= ?",[j])
+            time_start_list=curr.fetchall()
+            time_orignal=time_start_list[0][0]
+            tfinal=timedisection(time_orignal)
+            if(tfinal>=8):
+                ranks[count]+=1
+        count+=1
+    print(ranks)
         
 
 #This function uses the combo function to make all combinations  Author-vibhu
