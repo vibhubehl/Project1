@@ -127,6 +127,56 @@ def timeclash(combo):
     comm.close() 
     return combo_new
 
+
+
+
+# def insert(sub, time, crn):
+#     table= sqlite3.connect(table.db)
+    
+
+#     table.commit()
+#     table.close()
+
+
+def delete():
+    table= sqlite3.connect(table.db)
+    cursor=table.cursor()
+    cursor.execute('''DELETE FROM ranking WHERE ()''')
+    table.commit()
+    table.close()
+
+
+def ranking(list_of_crn):
+    q1_type= input("Are you an morning person? (y/n)")
+    q2_frequency= input(" Do you like back to back classes? (y/n)")
+    q3_holidays= input("Do u want to try a particular day to be free?  (y/n)")
+    q1_count=0
+    q2_count=0
+    q3_count=0
+    table= sqlite3.connect(ranking.db)
+    cursor=table.cursor()
+    cursor.execute('''CREATE TABLE ranking(Subject TEXT, Time Text, CRN TEXT)''')
+    table.commit()
+    table.close()
+    time_start_list=[]
+    item_list=[]  #will store all the items from INFO that is to be transfered to new table
+    crn_list_individual=[]
+    conn= sqlite3.connect('database.db')
+    curr= conn.cursor()
+    for i in list_of_crn:
+        for j in i:
+            crn_list_individual+=j      #makes a list of crns after timeclash
+    for k in crn_list_individual:
+        curr.execute("SELECT * from INFO where CRN= ?",k)
+        item_list=curr.fetchall()
+    for m in item_list:
+        cursor.execute("INSERT ")
+    cursor.execute("SELECT TIME FROM INFO ")
+    time_start_list=cursor.fetchall()
+    print(time_start_list)
+    #for time in time_start_list:
+        
+
 #This function uses the combo function to make all combinations  Author-vibhu
 def seperator(l,combo):
     conn=sqlite3.connect('database.db')
@@ -234,4 +284,5 @@ def assembler():
     combo_new=timeclash(crn_Combination)
     print('after')
     print(combo_new) #use this, it has the correct combination.
+    ranking(combo_new)
 assembler()

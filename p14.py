@@ -117,7 +117,6 @@ def shortform(j):
 
 def daysign(now):
     name=now.weekday()
-    print(name)
     if(name==0):
         return("M")
     elif(name==1):
@@ -173,12 +172,9 @@ def combinations(crn1,crn2,crn_Combination):
     #c=0
     crn_comb=(itertools.product(list(crn1),list(crn2)))
     i=0
-    print(crn1)
-    print(crn2)
     for x,y in crn_comb:
         crn_Combination+=[x+","+y]
         i+=1
-        #print(i)
 
     
 #this function creates initital list that lister needs. Author- Saumya
@@ -217,7 +213,6 @@ def crn(url,crn):
         crn_count+=5
         crn_string=""
         count1-=1
-    #print("Original CRN-  ",crn)
 
 
 
@@ -297,7 +292,6 @@ def lister(l,date1,place,time1,day,typec):
         elif((i+1)==len(day)):
             a=day[i]
         i+=1
-    #print(len(date))
 
         
     
@@ -307,7 +301,6 @@ def urlmaker(crsname,crsnum):
     base='https://www.uvic.ca/BAN1P/bwckctlg.p_disp_listcrse?term_in=201909&subj_in='
     end='&schd_in=%'
     url=base+crsname+'&crse_in='+crsnum+end
-    #print(url)
     return url
 
 #this functions finds the starting and ending time 
@@ -316,8 +309,6 @@ def realtime(time):
     temp=t.split('-')
     tstart=0
     tend=0
-    #print(temp)
-    #print(temp[0].rfind("2:30"))
     if(temp[0].rfind("8:00")!=-1):
         tstart=8
     if(temp[0].rfind("8:30")!=-1):
@@ -410,31 +401,10 @@ def realtime(time):
         tend=7
     if(temp[1].rfind("7:20")!=-1):
         tend=7.5
-    #print(tstart)
     ltemp=list()
     ltemp.append(tstart)
     ltemp.append(tend)
     return ltemp
-
-def main():
-    url=urlmaker('CSC','115')
-    list1=[]
-    date=[]
-    place=[]
-    time=[]
-    day=[]
-    typec=[]
-    prof=[]
-    time1=[]
-    listmaker(list1,url)
-    lister(list1,date,place,time1,day,typec)    
-    #xlgenerator(place,time1,day,typec,"CSC","115" )
-    day10=["TWF", "MWR","T","R","W","M"]
-    combinations(place,time,day10,typec)
-    temp_list=[]
-    cr=[]
-    crn(url,cr)
-    #print(url)
 
 
 
