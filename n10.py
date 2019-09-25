@@ -173,7 +173,7 @@ def ranking(list_of_crn):
     conn= sqlite3.connect('database.db')
     curr= conn.cursor()
     for k in list_of_crn:
-        ranks.append(0)
+        ranks.append(0.0)
         listtemp=k.split(",")
         for j in listtemp:
             curr.execute("SELECT TIME from INFO where CRN= ?",[j])
@@ -208,6 +208,7 @@ def ranking(list_of_crn):
             daytemp=p.days(day)
 
             for d in daytemp:
+
                 ttemp=tstart
                 if(d=='MONDAY'):
                     index_day=0
@@ -232,12 +233,32 @@ def ranking(list_of_crn):
                         ranks[count]+=1
                     table[index_time][index_day]=int(a)      
                     ttemp=ttemp+0.5
-   
+        
+        ttemp=0
+        rt=0.1
+        while(ttemp<24):
+            if(day_free=='MONDAY'):
+                index_day=0
+            elif(day_free=='TUESDAY'):
+                index_day=1
+            elif(day_free=='WEDNESDAY'):
+                index_day=2
+            elif(day_free=='THURSDAY'):
+                index_day=3
+            elif(day_free=='FRIDAY'):
+                index_day=4
+            activ=table[ttemp][index_day]
+            if(activ==0):
+                ranks[count]+=0.1
+            ttemp+=1
+
+
         #print(table)
         count+=1        
     comm.commit()
     comm.close() 
     print(ranks)
+    
         
 
 #This function uses the combo function to make all combinations  Author-vibhu
