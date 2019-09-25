@@ -156,8 +156,10 @@ def ranking(list_of_crn):
     q1_type= input("Are you an morning person? (y/n)")
     q2_frequency= input(" Do you like back to back classes? (y/n)")
     q3_holidays= input("Do u want to try a particular day to be free?  (y/n)")
+    if(q3_holiday=='y'):
+        day_free=input("Enter which day would you like to be free, enter in all caps")
     count=0
-    ranks= [len(list_of_crn)]
+    ranks= []
     # table= sqlite3.connect(ranking.db)
     # cursor=table.cursor()
     # cursor.execute('''CREATE TABLE ranking(Subject TEXT, Time Text, CRN TEXT)''')
@@ -167,14 +169,16 @@ def ranking(list_of_crn):
     conn= sqlite3.connect('database.db')
     curr= conn.cursor()
     for k in list_of_crn:
-        ranks[count]=0
+        ranks.append(0)
         listtemp=k.split(",")
         for j in listtemp:
             curr.execute("SELECT TIME from INFO where CRN= ?",[j])
             time_start_list=curr.fetchall()
             time_orignal=time_start_list[0][0]
             tfinal=timedisection(time_orignal)
-            if(tfinal>=8):
+            if(tfinal>=8 and q1_type=='y'):
+                ranks[count]+=1
+            elif(tfinal<=7 and q1_type=='n'):
                 ranks[count]+=1
         count+=1
     print(ranks)
@@ -286,6 +290,6 @@ def assembler():
     print(crn_Combination)
     combo_new=timeclash(crn_Combination)
     print('after')
-    print(combo_new) #use this, it has the correct combination.
+    print(len(combo_new)) #use this, it has the correct combination.
     ranking(combo_new)
 assembler()
