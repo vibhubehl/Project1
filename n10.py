@@ -13,6 +13,57 @@ import itertools
 import p14 as p
 import sqlite3
 
+def indexer(ttemp):
+    if(ttemp==8):
+        index_time=0
+    if(ttemp==8.5):
+         index_time=1
+    if(ttemp==9):
+        index_time=2
+    if(ttemp==9.5):
+        index_time=3
+    if(ttemp==10):
+        index_time=4
+    if(ttemp==10.5):
+        index_time=5
+    if(ttemp==11):
+        index_time=6
+    if(ttemp==11.5):
+        index_time=7
+    if(ttemp==12):
+        index_time=8
+    if(ttemp==12.5):
+        index_time=9
+    if(ttemp==1):
+        index_time=10
+    if(ttemp==1.5):
+        index_time=11
+    if(ttemp==2):
+        index_time=12
+    if(ttemp==2.5):
+        index_time=13
+    if(ttemp==3):
+        index_time=14
+    if(ttemp==3.5):
+        index_time=15
+    if(ttemp==4):
+        index_time=16
+    if(ttemp==4.5):
+        index_time=17
+    if(ttemp==5):
+        index_time=18
+    if(ttemp==5.5):
+        index_time=19
+    if(ttemp==6):
+        index_time=20
+    if(ttemp==6.5):
+        index_time=21
+    if(ttemp==7):
+        index_time=22
+    if(ttemp==7.5):
+        index_time=23
+    return index_time
+
 #this function checks all sequences and checks the one which have time clash
 def timeclash(combo):
     flag=0
@@ -54,54 +105,7 @@ def timeclash(combo):
                 #print(tend)
 
                 while(ttemp<tend):
-                    if(ttemp==8):
-                        index_time=0
-                    if(ttemp==8.5):
-                        index_time=1
-                    if(ttemp==9):
-                        index_time=2
-                    if(ttemp==9.5):
-                        index_time=3
-                    if(ttemp==10):
-                        index_time=4
-                    if(ttemp==10.5):
-                        index_time=5
-                    if(ttemp==11):
-                        index_time=6
-                    if(ttemp==11.5):
-                        index_time=7
-                    if(ttemp==12):
-                        index_time=8
-                    if(ttemp==12.5):
-                        index_time=9
-                    if(ttemp==1):
-                        index_time=10
-                    if(ttemp==1.5):
-                        index_time=11
-                    if(ttemp==2):
-                        index_time=12
-                    if(ttemp==2.5):
-                        index_time=13
-                    if(ttemp==3):
-                        index_time=14
-                    if(ttemp==3.5):
-                        index_time=15
-                    if(ttemp==4):
-                        index_time=16
-                    if(ttemp==4.5):
-                        index_time=17
-                    if(ttemp==5):
-                        index_time=18
-                    if(ttemp==5.5):
-                        index_time=19
-                    if(ttemp==6):
-                        index_time=20
-                    if(ttemp==6.5):
-                        index_time=21
-                    if(ttemp==7):
-                        index_time=22
-                    if(ttemp==7.5):
-                        index_time=23
+                    index_time= indexer(ttemp)
                     info=table[index_time][index_day]
                     if(info!=0):
                         flag=-1
@@ -156,7 +160,7 @@ def ranking(list_of_crn):
     q1_type= input("Are you an morning person? (y/n)")
     q2_frequency= input(" Do you like back to back classes? (y/n)")
     q3_holidays= input("Do u want to try a particular day to be free?  (y/n)")
-    if(q3_holiday=='y'):
+    if(q3_holidays=='y'):
         day_free=input("Enter which day would you like to be free, enter in all caps")
     count=0
     ranks= []
@@ -181,6 +185,58 @@ def ranking(list_of_crn):
             elif(tfinal<=7 and q1_type=='n'):
                 ranks[count]+=1
         count+=1
+    combo_new=list()
+    comm=sqlite3.connect('database.db')
+    count=0
+    for temp in list_of_crn:
+        l=temp.split(',')
+        table=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
+        [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
+        [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
+        [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+        table[0][0]=99
+        for a in l:
+            curr=comm.cursor()
+            atemp=int(a)
+            curr.execute("SELECT TIME FROM INFO WHERE (CRN =? )", [a])
+            time=curr.fetchall()
+            ltemp=p.realtime(time)
+            tstart=ltemp[0]
+            tend=ltemp[1]
+            curr.execute("SELECT DAY FROM INFO WHERE (CRN =? )", [a])
+            day=curr.fetchall()
+            daytemp=p.days(day)
+
+            for d in daytemp:
+                ttemp=tstart
+                if(d=='MONDAY'):
+                    index_day=0
+                elif(d=='TUESDAY'):
+                    index_day=1
+                elif(d=='WEDNESDAY'):
+                    index_day=2
+                elif(d=='THURSDAY'):
+                    index_day=3
+                elif(d=='FRIDAY'):
+                    index_day=4
+                #print(tstart)
+                #print(tend)
+
+                while(ttemp<tend):
+                    index_time=indexer(ttemp)
+                    try:
+                        class_before=table[index_time][index_day]
+                    except:
+                        class_before=0
+                    if(class_before!=temp):
+                        ranks[count]+=1
+                    table[index_time][index_day]=int(a)      
+                    ttemp=ttemp+0.5
+   
+        #print(table)
+        count+=1        
+    comm.commit()
+    comm.close() 
     print(ranks)
         
 
