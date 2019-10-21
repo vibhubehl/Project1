@@ -10,10 +10,11 @@ from datetime import datetime
 from xlwt import Workbook 
 import  xlsxwriter
 import itertools 
-import p14 as p
+import p14 as p #including p14
 import sqlite3
 
-def indexer(ttemp):
+def indexer(ttemp):#to convert time to to values of 0-23
+
     if(ttemp==8):
         index_time=0
     if(ttemp==8.5):
@@ -67,27 +68,28 @@ def indexer(ttemp):
 #this function checks all sequences and checks the one which have time clash
 def timeclash(combo):
     flag=0
-    combo_new=list()
-    comm=sqlite3.connect('database.db')
+    combo_new=list()#to keep the valid combo
+    comm=sqlite3.connect('database.db')#importing database
+
     for temp in combo:
         l=temp.split(',')
         table=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
         [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
         [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
         [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
-        table[0][0]=99
+        table[0][0]=99#this table is to store classes
+
         for a in l:
             curr=comm.cursor()
             atemp=int(a)
             curr.execute("SELECT TIME FROM INFO WHERE (CRN =? )", [a])
-            time=curr.fetchall()
+            time=curr.fetchall()#stores time
             ltemp=p.realtime(time)
-            tstart=ltemp[0]
-            tend=ltemp[1]
+            tstart=ltemp[0]#start time
+            tend=ltemp[1]#start time
             curr.execute("SELECT DAY FROM INFO WHERE (CRN =? )", [a])
-            day=curr.fetchall()
+            day=curr.fetchall()#stores day of classes
             daytemp=p.days(day)
-            #table=[[0]*6]*40
 
             for d in daytemp:
                 ttemp=tstart
@@ -101,45 +103,31 @@ def timeclash(combo):
                     index_day=3
                 elif(d=='FRIDAY'):
                     index_day=4
-                #print(tstart)
-                #print(tend)
 
-                while(ttemp<tend):
+                while(ttemp<tend):#fill places in table to mark when class is.  
                     index_time= indexer(ttemp)
                     info=table[index_time][index_day]
-                    if(info!=0):
+
+                    if(info!=0):#checking if place is already full or not 
                         flag=-1
-                        #print('breaking 1')
-                        break
+                        break#break if something already exists
                     else:
-                        table[index_time][index_day]=1   
-                        
-                    ttemp=ttemp+0.5
-                if(flag==-1):
-                    #print('breaking 2')
+                        table[index_time][index_day]=1 #if empty then change to one to indicate this slot if filled
+
+                    ttemp=ttemp+0.5#increament temp by 0.5
+
+                if(flag==-1):#if timeclash detected then break
                     break
-                #print(table)
-        if(flag==-1):
+         
+        if(flag==-1):#if timeclash detected then break
             flag=0
-            #print('continue')
-            #continue
-        else:
-            #print('adding')
+        else:#if no timeclash detected then append
             combo_new.append(temp)   
-        #print(table)        
+               
     comm.commit()
     comm.close() 
     return combo_new
 
-
-
-
-# def insert(sub, time, crn):
-#     table= sqlite3.connect(table.db)
-    
-
-#     table.commit()
-#     table.close()
 
 #this function returns the starting time in int form
 def timedisection(l):
@@ -156,31 +144,42 @@ def delete():
     table.close()
 
 
-def ranking(list_of_crn):
+def ranking(list_of_crn):#ranks the combos
+    #questions for the user
     q1_type= input("Are you an morning person? (y/n)")
     q2_frequency= input(" Do you like back to back classes? (y/n)")
     day_free= input("Which day do you want to be free?  (Enter full name in caps)")
+
     count=0
     ranks= []
     time_start_list=[]
     conn= sqlite3.connect('database.db')
     curr= conn.cursor()
+
     for k in list_of_crn:
+
         ranks.append(0.0)
         listtemp=k.split(",")
+
         for j in listtemp:
-            curr.execute("SELECT TIME from INFO where CRN= ?",[j])
-            time_start_list=curr.fetchall()
+
+            curr.execute("SELECT TIME from INFO where CRN= ?",[j])#fetch info of particular crn
+            time_start_list=curr.fetchall()#fetch starting 
             time_orignal=time_start_list[0][0]
-            tfinal=timedisection(time_orignal)
+            tfinal=timedisection(time_orignal)#getting starting life
+
+            #ranking for question 1
             if(tfinal>=8 and q1_type=='y'):
                 ranks[count]+=1
             elif(tfinal<=7 and q1_type=='n'):
                 ranks[count]+=2.5
+
         count+=1
+
     combo_new=list()
     comm=sqlite3.connect('database.db')
     count=0
+
     for temp in list_of_crn:
         l=temp.split(',')
         table=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
@@ -201,7 +200,7 @@ def ranking(list_of_crn):
             daytemp=p.days(day)
 
             for d in daytemp:
-
+                
                 ttemp=tstart
                 if(d=='MONDAY'):
                     index_day=0
@@ -213,8 +212,6 @@ def ranking(list_of_crn):
                     index_day=3
                 elif(d=='FRIDAY'):
                     index_day=4
-                #print(tstart)
-                #print(tend)
 
                 while(ttemp<tend):
                     index_time=indexer(ttemp)
@@ -222,6 +219,8 @@ def ranking(list_of_crn):
                         class_before=table[index_time][index_day]
                     except:
                         class_before=0
+                        
+                    #ranking for question2
                     if(class_before!=temp and q2_frequency=='y'):
                         ranks[count]+=2.5
                     elif((class_before==temp or class_before==0) and q2_frequency=='n'):
@@ -232,6 +231,7 @@ def ranking(list_of_crn):
         ttemp=0
         rt=0.0
         while(ttemp<24):
+
             if(day_free=='MONDAY'):
                 index_day=0
             elif(day_free=='TUESDAY'):
@@ -247,7 +247,6 @@ def ranking(list_of_crn):
                 rt+=0.1
             ttemp+=1
         ranks[count]=float(ranks[count])+rt
-        #print(table)
         count+=1        
     comm.commit()
     comm.close() 
@@ -272,6 +271,7 @@ def seperator(l,combo):
         l1=[]
         lab2=[]
         tutorial2=[]
+
         while(True):
             if(n<len(lecture)):                
                 l1.append(str(lecture[n][0]))
@@ -282,29 +282,36 @@ def seperator(l,combo):
             if(n>=len(lecture) and n>=len(tutorial) and n>len(lab)):
                 break
             n=n+1
+
         lecture=l1
         lab=lab2
         tutorial= tutorial2
-        #print(type(lecture[0]))
+     
         if(i==0):
+
             if(lecture!=None):
                 combo=lecture
+
                 if(lab!=None):
                     p.combinations(lab,combo,combo_temp)
                     combo=combo_temp
                 if(tutorial!=None):
                     p.combinations(tutorial,combo,combo_temp)
                     combo=combo_temp
+
             elif(lab!=None):
                 combo=lab
+
                 if(lecture!=None):
                     p.combinations(lecture,combo,combo_temp)
                     combo=combo_temp
                 if(tutorial!=None):
                     p.combinations(tutorial,combo,combo_temp)
                     combo=combo_temp
+
             else:
                 combo=tutorial
+
                 if(lecture!=None):
                     p.combinations(lecture,combo,combo_temp)
                     combo=combo_temp
@@ -313,6 +320,7 @@ def seperator(l,combo):
                     combo=combo_temp
             
         else:
+
             if(lecture!=None):
                 p.combinations(lecture,combo,combo_temp)
                 combo=combo_temp
@@ -322,6 +330,7 @@ def seperator(l,combo):
             if(tutorial!=None):
                 p.combinations(tutorial,combo,combo_temp)
                 combo=combo_temp
+
         i=i+1
    
     conn.commit()
@@ -329,12 +338,14 @@ def seperator(l,combo):
     return combo
         
 crnl=[]
-def assembler():
+def assembler():#ask questions from the user and calls all the relevant functions
     ans= 'y'
     n=0
     name=[]
     crn_Combination=[]  
+
     while(ans=='y'):
+
         crsname=input("Enter Course Name")
         crsnum=input("Enter Course Number")
         name_temp=crsname+' '+crsnum
@@ -356,6 +367,7 @@ def assembler():
         p.sql(place,time1,day,typec, crsname,crsnum,crn1 )
         n=n+1
         ans=input("If you want to continue enter 'y'")
+        
     crn_Combination= seperator(name,crn_Combination)
     combo_new=[]
     print(crn_Combination)
