@@ -148,10 +148,21 @@ def ranking(list_of_crn):#ranks the combos
     #questions for the user
     q1_type= input("Are you an morning person? (y/n)")
     q2_frequency= input(" Do you like back to back classes? (y/n)")
+<<<<<<< HEAD
     day_free= input("Which day do you want to be free?  (Enter full name in caps)")
 
+=======
+    q3_holidays= input("Do u want to try a particular day to be free?  (y/n)")
+    if(q3_holidays=='y'):
+        day_free=input("Enter which day would you like to be free, enter in all caps")
+>>>>>>> parent of da95885... Code finished, Minor Changes required
     count=0
     ranks= []
+    # table= sqlite3.connect(ranking.db)
+    # cursor=table.cursor()
+    # cursor.execute('''CREATE TABLE ranking(Subject TEXT, Time Text, CRN TEXT)''')
+    # table.commit()
+    # table.close()
     time_start_list=[]
     conn= sqlite3.connect('database.db')
     curr= conn.cursor()
@@ -172,8 +183,12 @@ def ranking(list_of_crn):#ranks the combos
             if(tfinal>=8 and q1_type=='y'):
                 ranks[count]+=1
             elif(tfinal<=7 and q1_type=='n'):
+<<<<<<< HEAD
                 ranks[count]+=2.5
 
+=======
+                ranks[count]+=1
+>>>>>>> parent of da95885... Code finished, Minor Changes required
         count+=1
 
     combo_new=list()
@@ -219,17 +234,22 @@ def ranking(list_of_crn):#ranks the combos
                         class_before=table[index_time][index_day]
                     except:
                         class_before=0
+<<<<<<< HEAD
                         
                     #ranking for question2
                     if(class_before!=temp and q2_frequency=='y'):
                         ranks[count]+=2.5
                     elif((class_before==temp or class_before==0) and q2_frequency=='n'):
                         ranks[count]+=2.5
+=======
+                    if(class_before!=temp):
+                        ranks[count]+=1
+>>>>>>> parent of da95885... Code finished, Minor Changes required
                     table[index_time][index_day]=int(a)      
                     ttemp=ttemp+0.5
         
         ttemp=0
-        rt=0.0
+        rt=0.1
         while(ttemp<24):
 
             if(day_free=='MONDAY'):
@@ -244,9 +264,15 @@ def ranking(list_of_crn):#ranks the combos
                 index_day=4
             activ=table[ttemp][index_day]
             if(activ==0):
-                rt+=0.1
+                ranks[count]+=0.1
             ttemp+=1
+<<<<<<< HEAD
         ranks[count]=float(ranks[count])+rt
+=======
+
+
+        #print(table)
+>>>>>>> parent of da95885... Code finished, Minor Changes required
         count+=1        
     comm.commit()
     comm.close() 
